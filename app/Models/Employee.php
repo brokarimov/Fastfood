@@ -35,4 +35,8 @@ class Employee extends Model
     {
         return $this->hasMany(WaiterOrder::class, 'employee_id');
     }
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class, 'employee_id');
+    }
 }
