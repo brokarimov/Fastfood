@@ -33,7 +33,7 @@
                             <select class="form-control" wire:model="salary_type">
                                 <option value="">Select salary type</option>
                                 <option value="fixed">Fixed</option>
-                                <option value="hourly">Hourly</option>
+                                <option value="mixed">Mixed</option>
                             </select>
                             @error('salary_type')
                                 <span class="text-danger">{{$message}}</span><br>
@@ -159,7 +159,7 @@
                         <select class="form-control" wire:model="salary_typeEdit" value="{{$salary_typeEdit}}">
                             <option value="">Select salary type</option>
                             <option value="fixed">Fixed</option>
-                            <option value="hourly">Hourly</option>
+                            <option value="mixed">Mixed</option>
                         </select>
 
                         <label for="">Salary amount</label>

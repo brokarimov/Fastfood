@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Order;
 use App\Models\Salary;
 use Carbon\Carbon;
+use Illuminate\Contracts\Mail\Attachable;
 use Livewire\Component;
 
 class SalaryComponent extends Component
@@ -15,10 +16,13 @@ class SalaryComponent extends Component
     public $employees, $employee, $employeeSalary;
     public $statistics = null;
     public $bonus = null, $sum = 0;
+    public $bonuses = [];
     public $date;
     public $dates = [];
+
     public $activePayment = null;
     public $workedSalary;
+    public $salaryTypeActive = false;
     public function mount()
     {
         $this->attandances = Attendance::all();
@@ -51,23 +55,43 @@ class SalaryComponent extends Component
         $this->statistics = Attendance::where('employee_id', $this->employee)->get();
         $this->employeeSalary = Employee::where('id', $this->employee)->first();
     }
-    public function giveBonus()
+    public function giveBonus($employeeId)
     {
-        $employee = Employee::where('id', $this->employee)->first();
-        if ($employee->user->role == 'waiter') {
-            $orders = Order::where('status', 4)
-                ->whereHas('waiterOrder', function ($query) use ($employee) {
-                    $query->where('employee_id', $employee->id);
-                })
-                ->get();
-        }
-        if ($this->bonus != null) {
-            foreach ($orders as $order) {
+        $employee = Employee::find($employeeId);
 
-                $this->sum += ($order->summ * $this->bonus);
+        // Reset sum
+        $this->sum = 0;
+
+        // Fetch selected bonus for this employee
+        $selectedBonus = $this->bonuses[$employeeId] ?? null;
+
+        if ($employee && $selectedBonus != null) {
+            if ($employee->user->role == 'waiter') {
+                $orders = Order::where('status', 4)
+                    ->whereHas('waiterOrder', function ($query) use ($employee) {
+                        $query->where('employee_id', $employee->id)
+                            ->whereIn('date', $this->dates);
+                    })->get();
+
+                foreach ($orders as $order) {
+                    $this->sum += ($order->summ * $selectedBonus);
+                }
+            } elseif ($employee->user->role == 'manager') {
+                $attendances = Attendance::where('employee_id', $employee->id)
+                    ->pluck('date')->toArray();
+
+                $filteredDates = array_intersect($attendances, $this->dates);
+
+                $orders = Order::where('status', 4)
+                    ->whereHas('waiterOrder', function ($query) use ($filteredDates) {
+                        $query->whereIn('date', $filteredDates);
+                    })->sum('summ');
+
+                $this->sum = $orders * $selectedBonus;
             }
         }
     }
+
 
     public function payment(Employee $employee, int $salary)
     {
@@ -109,8 +133,17 @@ class SalaryComponent extends Component
             $this->close();
         } else {
             $this->comment = 'Quantity is very much!';
-            
         }
-        
+    }
+
+    public function salaryTypeMixed()
+    {
+        $this->salaryTypeActive = true;
+        $this->mount();
+    }
+    public function salaryTypeFixed()
+    {
+        $this->salaryTypeActive = false;
+        $this->mount();
     }
 }

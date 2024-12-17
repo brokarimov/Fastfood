@@ -112,6 +112,8 @@
                             <option value="admin">Admin</option>
                             <option value="waiter">Waiter</option>
                             <option value="chef">Chef</option>
+                            <option value="manager">Manager</option>
+                            
                         </select>
                         @error('role')
                             <span class="text-danger">{{$message}}</span><br>

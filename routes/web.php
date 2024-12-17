@@ -29,7 +29,7 @@ Route::middleware([Check::class . ':admin'])->group(function () {
     Route::get('/logout', [LoginComponent::class, 'logout']);
 
 });
-Route::middleware([Check::class . ':admin,waiter,chef'])->group(function () {
+Route::middleware([Check::class . ':admin,waiter,chef,manager'])->group(function () {
     Route::get('/order', OrderAdminComponent::class);
     Route::get('/logout', [LoginComponent::class, 'logout']);
 

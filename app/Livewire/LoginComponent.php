@@ -23,7 +23,7 @@ class LoginComponent extends Component
                     'start_time' => now(),
                 ]);
             }
-            if (auth()->check() && auth()->user()->role == 'waiter' || auth()->user()->role == 'chef') {
+            if (auth()->check() && auth()->user()->role == 'waiter' || auth()->user()->role == 'chef' || auth()->user()->role == 'manager') {
                 return redirect()->intended('/order');
             } else {
                 return redirect()->intended('/category');
