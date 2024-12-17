@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Order;
 use App\Models\Salary;
+use App\Models\WaiterOrder;
 use Carbon\Carbon;
 use Illuminate\Contracts\Mail\Attachable;
 use Livewire\Component;
@@ -70,7 +71,7 @@ class SalaryComponent extends Component
                 $orders = Order::where('status', 4)
                     ->whereHas('waiterOrder', function ($query) use ($employee) {
                         $query->where('employee_id', $employee->id)
-                            ->whereIn('date', $this->dates);
+                            ->whereIn('date', $this->dates)->where('status_waiter', 0);
                     })->get();
 
                 foreach ($orders as $order) {
@@ -84,7 +85,7 @@ class SalaryComponent extends Component
 
                 $orders = Order::where('status', 4)
                     ->whereHas('waiterOrder', function ($query) use ($filteredDates) {
-                        $query->whereIn('date', $filteredDates);
+                        $query->whereIn('date', $filteredDates)->where('status_manager', 0);
                     })->sum('summ');
 
                 $this->sum = $orders * $selectedBonus;
@@ -120,6 +121,20 @@ class SalaryComponent extends Component
                     'given' => $this->paySalary,
                     'remainder' => $salary,
                 ]);
+                if ($this->activePayment->user->role == 'waiter') {
+                    $waiterOrders = WaiterOrder::where('status_waiter', 0)->get();
+                    foreach ($waiterOrders as $waiterOrder) {
+                        $waiterOrder->status_waiter = 1;
+                        $waiterOrder->save();
+                    }
+                }
+                if ($this->activePayment->user->role == 'manager') {
+                    $waiterOrders = WaiterOrder::where('status_manager', 0)->get();
+                    foreach ($waiterOrders as $waiterOrder) {
+                        $waiterOrder->status_manager = 1;
+                        $waiterOrder->save();
+                    }
+                }
             } else {
                 Salary::create([
                     'employee_id' => $this->activePayment->id,
@@ -129,6 +144,20 @@ class SalaryComponent extends Component
                     'given' => $this->paySalary,
                     'remainder' => $salary,
                 ]);
+                if ($this->activePayment->user->role == 'waiter') {
+                    $waiterOrders = WaiterOrder::where('status_waiter', 0)->get();
+                    foreach ($waiterOrders as $waiterOrder) {
+                        $waiterOrder->status_waiter = 1;
+                        $waiterOrder->save();
+                    }
+                }
+                if ($this->activePayment->user->role == 'manager') {
+                    $waiterOrders = WaiterOrder::where('status_manager', 0)->get();
+                    foreach ($waiterOrders as $waiterOrder) {
+                        $waiterOrder->status_manager = 1;
+                        $waiterOrder->save();
+                    }
+                }
             }
             $this->close();
         } else {

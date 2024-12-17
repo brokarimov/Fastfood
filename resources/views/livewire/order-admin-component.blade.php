@@ -137,6 +137,8 @@
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="col-3">
                             <div class="card card-row card-default">
 
@@ -195,6 +197,9 @@
                                 </div>
                             </div>
                         </div>
+
+
+
                         <div class="col-3">
                             <div class="card card-row card-default">
                                 <div class="card-header bg-success">
@@ -205,6 +210,16 @@
                                 <div class="card-body" style="height: 600px; overflow-y: auto;">
                                     @foreach ($orders4 as $order)
                                     @if ($order->date == now()->format('Y-m-d'))
+                                    @if (auth()->check() && auth()->user()->role != 'waiter')
+                                    <span>Waiter:
+                                        @foreach ($order->waiterOrder as $orderWaiter)
+                                        @php
+                                        $employee = $employees->where('id', $orderWaiter->employee_id)->first();
+                                        @endphp
+                                        {{$employee->user->name}}
+                                        @endforeach
+                                    </span>
+                                    @endif
                                     <div id="accordion-{{$order->id}}">
                                         <div class="card">
                                             <div class="card-header" id="heading{{$order->id}}">
@@ -237,16 +252,7 @@
                                         </div>
                                     </div>
 
-                                    @if (auth()->check() && auth()->user()->role != 'waiter')
-                                    <span>Waiter:
-                                        @foreach ($order->waiterOrder as $orderWaiter)
-                                        @php
-                                        $employee = $employees->where('id', $orderWaiter->employee_id)->first();
-                                        @endphp
-                                        {{$employee->user->name}}
-                                        @endforeach
-                                    </span>
-                                    @endif
+
                                     @endif
                                     @endforeach
                                 </div>

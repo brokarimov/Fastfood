@@ -49,12 +49,13 @@
                     }
 
 
-                    $baseSalary = $employee->salary;
+                    $baseSalary = $employee->salary / $employee->monthly_time * round($attandances->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('time')) ;
+
                     $latePenaltyRate = $baseSalary / $employee->monthly_time;
                     $extraBonusRate = $baseSalary / $employee->monthly_time;
 
                     $salary = $baseSalary
-                    - ($latePenaltyRate * abs($sumOfAllLates))
+                    - $latePenaltyRate
                     @endphp
                     <tr>
                         <td>{{ $employee->user->name }}</td>
@@ -67,7 +68,10 @@
                                 {{round($attandances->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('time'))}}
                             </p>
                         </td>
-                        <td>${{ number_format($salary, 2, '.', ',') }}</td>
+                        <td>
+                            ${{ number_format($salary, 2, '.', ',') }}
+
+                        </td>
 
                         @if ($salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->isNotEmpty())
                         <td>${{ $salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('given') }}</td>
@@ -133,13 +137,16 @@
                     }
 
 
-                    $baseSalary = $employee->salary;
+                    $baseSalary = $employee->salary / $employee->monthly_time * round($attandances->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('time')) ;
+
+
                     $latePenaltyRate = $baseSalary / $employee->monthly_time;
                     $extraBonusRate = $baseSalary / $employee->monthly_time;
 
                     $salary = $baseSalary
-                    - ($latePenaltyRate * abs($sumOfAllLates))
+                    - $latePenaltyRate
                     @endphp
+
                     <tr>
                         <td>{{ $employee->user->name }}</td>
 
@@ -194,7 +201,15 @@
                         $salary += $employeeSum; // Add this employee-specific bonus to their salary
                         @endphp
 
-                        <td>${{ number_format($salary, 2, '.', ',') }}</td>
+                        <td>
+                            @php
+                            if ($salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('given') && $salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('remainder')){
+                            $salary = $salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('given') + $salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->last()->remainder;
+                            }
+
+                            @endphp
+                            ${{ number_format($salary, 2, '.', ',') }}
+                        </td>
 
                         @if ($salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->isNotEmpty())
                         <td>${{ $salaries->where('employee_id', $employee->id)->whereIn('date', $dates)->sum('given') }}</td>
