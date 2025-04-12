@@ -77,6 +77,7 @@ A real-time restaurant and staff management system. Orders are taken by waiters,
 
 <p float="left">
   <img src="./screenshots/Screenshot 2025-04-13 050452.png" width="48%" />
+  <img src="./screenshots/Screenshot 2025-04-13 053428.png" width="48%" />
   <img src="./screenshots/Screenshot 2025-04-13 051254.png" width="48%" />
   <img src="./screenshots/Screenshot 2025-04-13 051350.png" width="48%" />
   <img src="./screenshots/Screenshot 2025-04-13 052854.png" width="48%" />
