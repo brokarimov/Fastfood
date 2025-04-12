@@ -28,6 +28,8 @@ class LoginComponent extends Component
             } else {
                 return redirect()->intended('/category');
             }
+        }else{
+            return redirect('/login');
         }
     }
     public function render()

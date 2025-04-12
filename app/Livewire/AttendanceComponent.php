@@ -41,7 +41,7 @@ class AttendanceComponent extends Component
     }
     public function update(int $employeeID, $attendanceId)
     {
-        
+
         $user = Attendance::where('employee_id', $employeeID)->where('date', $attendanceId)->first();
 
         if (!empty($this->start_time) && !empty($this->end_time)) {
@@ -72,10 +72,21 @@ class AttendanceComponent extends Component
                 'end_time' => $this->end_time,
                 'time' => $difTime,
             ]);
-        } 
+        }
         $this->mount();
         $this->reset('start_time', 'end_time');
     }
+
+    public function deleteAttendance(int $attendanceId)
+    {
+        $attendance = Attendance::where('id', $attendanceId)
+            ->first();
+
+        
+        $attendance->delete();
+        $this->mount();
+    }
+
 
 
     public function attendaceCreate(int $employeeID, $date)
@@ -91,8 +102,6 @@ class AttendanceComponent extends Component
                 'end_time' => Carbon::parse($this->end_time)->toTimeString(),
                 'time' => Carbon::parse($this->start_time)->diffInHours(Carbon::parse($this->end_time)),
             ]);
-
-            
         }
 
         $this->reset('start_time', 'end_time');
